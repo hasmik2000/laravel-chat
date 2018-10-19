@@ -1,0 +1,17 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+.card-body a {
+    text-decoration: none;
+}
+.user {
+    border: 1px solid #EEEEEE;
+}
+.user img {
+    width: 50px;
+}
+.list-group {
+    overflow-y: scroll;
+    height: 200px;
+}
