@@ -5,12 +5,23 @@ namespace App\Http\Controllers;
 use App\Message;
 use Illuminate\Http\Request;
 use App\Events\MessageSentEvent;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class MessageController extends Controller
 {
     public function fetch($id)
     {
-        $messages = Message::all();
+        $from = Auth::user()->id;
+        $messages = DB::table('messages')->where([
+            ['from', $from],
+            ['to', $id],
+            ['from', $id],
+            ['to', $from]
+        ])->get();
+
+        dd($messages);
+        $messages = Message::find('from', $from, 'to', $id);
 
         return view('chat', compact('messages', 'id'));
     }

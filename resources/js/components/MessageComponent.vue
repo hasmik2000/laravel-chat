@@ -37,10 +37,10 @@
         mounted() {
             Echo.channel('chat')
                 .listen('MessageSentEvent', (e) => {
-//                    this.messages.push({
-//                        message: e.message.message
-//                    });
-                    console.log(e);
+                    this.messages.push({
+                        message: e.message.message
+                    });
+                    console.log(e.message.message);
                     this.newMessage = '';
                 });
         },
@@ -52,6 +52,7 @@
                     to: this.to,
                 })
                     .then(function (response) {
+//                        this.messages.push(response.message);
                         console.log(response);
                     })
                     .catch(function (error) {

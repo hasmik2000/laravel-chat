@@ -57165,10 +57165,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         var _this = this;
 
         Echo.channel('chat').listen('MessageSentEvent', function (e) {
-            //                    this.messages.push({
-            //                        message: e.message.message
-            //                    });
-            console.log(e);
+            _this.messages.push({
+                message: e.message.message
+            });
+            console.log(e.message.message);
             _this.newMessage = '';
         });
     },
@@ -57180,6 +57180,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 from: this.from,
                 to: this.to
             }).then(function (response) {
+                //                        this.messages.push(response.message);
                 console.log(response);
             }).catch(function (error) {
                 console.log(error);
