@@ -10,11 +10,17 @@ use Illuminate\Support\Facades\DB;
 
 class MessageController extends Controller
 {
+    public function index()
+    {
+        return view('chat');
+    }
+
     public function fetch($id)
     {
         $from = Auth::user()->id;
+        $user = Auth::user();
 
-        $messages = Message::where(function ($query) use ($from, $id) {
+        $messages = Message::with('user')->where(function ($query) use ($from, $id) {
                 $query->where('from', '=', $from)
                     ->where('to', '=', $id);
             })
@@ -22,8 +28,10 @@ class MessageController extends Controller
                 $query2->where('to', '=', $from)
                     ->where('from', '=', $id);
             })->get();
-
-        return view('chat', compact('messages', 'id'));
+dd($messages);
+//        $user = $messages->user->name;
+//        return response()->json(['messages' => $messages]);
+        return view('chat', compact('messages', 'id', 'user'));
     }
 
     public function send(Request $request)
@@ -32,6 +40,8 @@ class MessageController extends Controller
 
         $message = Message::create($data);
 
-        event(new MessageSentEvent($message));
+        $user = Auth::user();
+
+        event(new MessageSentEvent($message, $user));
     }
 }

@@ -12,7 +12,7 @@
                         {{ message.message }}
                     </p>
                 </div>
-                <small class="badge float-right" :class="badgeClass">{{ user }}</small>
+                <!--<small class="badge float-right" :class="badgeClass">{{ }}</small>-->
             </li>
         </ul>
         <div class="input-group mt-3">
@@ -56,9 +56,12 @@
         mounted() {
             Echo.private('chat')
                 .listen('MessageSentEvent', (e) => {
-                    this.msg.push({
-                        message: e.message.message
-                    });
+                    console.log(e.message.to);
+                        this.msg.push({
+                            message: e.message.message,
+                            user: e.user.name
+                        });
+                        console.log(this.user);
 //                    this.users.push(e.user);
 //                    this.color.push('danger');
                 });
@@ -75,7 +78,7 @@
                     .then(function (response) {
                         _this.newMessage = '';
 //                        _this.color.push('success');
-                        console.log(response);
+//                        console.log(response);
                     })
                     .catch(function (error) {
                         console.log(error);

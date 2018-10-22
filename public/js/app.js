@@ -57257,9 +57257,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         var _this2 = this;
 
         Echo.private('chat').listen('MessageSentEvent', function (e) {
+            console.log(e.message.to);
             _this2.msg.push({
-                message: e.message.message
+                message: e.message.message,
+                user: e.user.name
             });
+            console.log(_this2.user);
             //                    this.users.push(e.user);
             //                    this.color.push('danger');
         });
@@ -57276,7 +57279,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             }).then(function (response) {
                 _this.newMessage = '';
                 //                        _this.color.push('success');
-                console.log(response);
+                //                        console.log(response);
             }).catch(function (error) {
                 console.log(error);
             });
@@ -57330,13 +57333,7 @@ var render = function() {
                     "\n                "
                 )
               ])
-            ]),
-            _vm._v(" "),
-            _c(
-              "small",
-              { staticClass: "badge float-right", class: _vm.badgeClass },
-              [_vm._v(_vm._s(_vm.user))]
-            )
+            ])
           ]
         )
       })
