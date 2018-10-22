@@ -13,15 +13,15 @@ class MessageController extends Controller
     public function fetch($id)
     {
         $from = Auth::user()->id;
-        $messages = DB::table('messages')->where([
-            ['from', $from],
-            ['to', $id],
-            ['from', $id],
-            ['to', $from]
-        ])->get();
 
-        dd($messages);
-        $messages = Message::find('from', $from, 'to', $id);
+        $messages = Message::where(function ($query) use ($from, $id) {
+                $query->where('from', '=', $from)
+                    ->where('to', '=', $id);
+            })
+            ->orWhere(function ($query2) use ($from, $id) {
+                $query2->where('to', '=', $from)
+                    ->where('from', '=', $id);
+            })->get();
 
         return view('chat', compact('messages', 'id'));
     }
