@@ -8,6 +8,7 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">Chats</div>
                         <div class="panel-body">
+                            {{--{{ dd($messages->user->name) }}--}}
                             <message
                                     :messages="{{ json_encode($messages) }}"
                                     :from="{{ Auth::user()->id }}"

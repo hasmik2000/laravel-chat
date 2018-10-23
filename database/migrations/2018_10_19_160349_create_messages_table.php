@@ -21,7 +21,7 @@ class CreateMessagesTable extends Migration
             $table->timestamps();
 
             $table->foreign('from')->references('id')->on('users');
-            $table->foreign('to')->references('id')->on('users');
+//            $table->foreign('to')->references('id')->on('users');
         });
     }
 

@@ -57235,12 +57235,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['messages', 'from', 'to', 'color', 'user'],
+    props: ['messages', 'from', 'to', 'color'],
     data: function data() {
         return {
             newMessage: '',
             msg: this.messages,
-            //                users: this.user
             colors: []
         };
     },
@@ -57256,27 +57255,27 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     mounted: function mounted() {
         var _this2 = this;
 
+        console.log(this.to);
         Echo.private('chat').listen('MessageSentEvent', function (e) {
+            if (_this2.to === e.message.from && _this2.from === e.message.to) {
+                _this2.msg.push({
+                    message: e.message.message,
+                    user: { name: e.user.name }
+                });
+            }
             console.log(e.message.to);
-            _this2.msg.push({
-                message: e.message.message,
-                user: e.user.name
-            });
-            console.log(_this2.user);
-            //                    this.users.push(e.user);
-            //                    this.color.push('danger');
         });
     },
 
     methods: {
         sendMessage: function sendMessage() {
             var _this = this;
-            //                _this.users.push('you');
             axios.post('/send', {
                 message: this.newMessage,
                 from: this.from,
                 to: this.to
             }).then(function (response) {
+                //                        _this.messages.push(response.data);
                 _this.newMessage = '';
                 //                        _this.color.push('success');
                 //                        console.log(response);
@@ -57320,7 +57319,7 @@ var render = function() {
                 _c("strong", { staticClass: "primary-font" }, [
                   _vm._v(
                     "\n                        " +
-                      _vm._s(message.user) +
+                      _vm._s(message.user.name) +
                       "\n                    "
                   )
                 ])

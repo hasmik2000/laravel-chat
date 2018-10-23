@@ -5,7 +5,7 @@
                 <div class="chat-body clearfix">
                     <div class="header">
                         <strong class="primary-font">
-                            {{ message.user }}
+                            {{ message.user.name }}
                         </strong>
                     </div>
                     <p>
@@ -35,14 +35,12 @@
             'from',
             'to',
             'color',
-            'user'
         ],
         data() {
             return {
                 newMessage: '',
                 msg: this.messages,
-//                users: this.user
-                colors: []
+                colors: [],
             }
         },
         computed: {
@@ -54,28 +52,28 @@
             }
         },
         mounted() {
+            console.log(this.to);
             Echo.private('chat')
                 .listen('MessageSentEvent', (e) => {
-                    console.log(e.message.to);
+                    if ((this.to === e.message.from) && (this.from === e.message.to)) {
                         this.msg.push({
                             message: e.message.message,
-                            user: e.user.name
+                            user:{name: e.user.name },
                         });
-                        console.log(this.user);
-//                    this.users.push(e.user);
-//                    this.color.push('danger');
+                    }
+                    console.log(e.message.to);
                 });
         },
         methods: {
             sendMessage() {
                 const _this = this;
-//                _this.users.push('you');
                 axios.post('/send', {
                     message: this.newMessage,
                     from: this.from,
                     to: this.to,
                 })
                     .then(function (response) {
+//                        _this.messages.push(response.data);
                         _this.newMessage = '';
 //                        _this.color.push('success');
 //                        console.log(response);
