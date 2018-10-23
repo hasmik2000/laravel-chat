@@ -1,7 +1,7 @@
 <template>
     <div>
         <ul class="chat" v-chat-scroll="{always: false}">
-            <li class="left clearfix p-3" v-for="message in msg" :class="className">
+            <li class="left clearfix p-3" v-for="message in msg">
                 <div class="chat-body clearfix">
                     <div class="header">
                         <strong class="primary-font">
@@ -12,11 +12,11 @@
                         {{ message.message }}
                     </p>
                 </div>
-                <!--<small class="badge float-right" :class="badgeClass">{{ }}</small>-->
             </li>
         </ul>
+        <div class="badge badge-pill badge-primary">{{ typing }}</div>
         <div class="input-group mt-3">
-            <input id="btn-input" type="text" name="message" class="form-control input-sm" placeholder="Type your message here..." v-model="newMessage" @keyup.enter="sendMessage">
+            <input id="btn-input" type="text" name="message" class="form-control input-sm" placeholder="Type your message here..." v-model="newMessage" @keydown="isTyping()" @keyup.enter="sendMessage">
             <span class="input-group-btn">
                 <button class="btn btn-primary btn-sm" id="btn-chat" @click="sendMessage">
                     Send
@@ -42,19 +42,10 @@
                 newMessage: '',
                 msg: this.messages,
                 colors: [],
-            }
-        },
-        computed: {
-            className(){
-                return 'list-group-item-'+this.color;
-            },
-            badgeClass(){
-                return 'badge-'+this.color;
+                typing: ''
             }
         },
         mounted() {
-            console.log("To " + this.to);
-            console.log("From " + this.from);
             Echo.private('chat')
                 .listen('MessageSentEvent', (e) => {
                     if ((this.to === e.message.from) && (this.from === e.message.to)) {
@@ -62,9 +53,16 @@
                             message: e.message.message,
                             user:{name: e.user.name },
                         });
+                        this.typing = ''
                     }
-                    console.log("To " + e.message.to);
-                    console.log("From " + e.message.from);
+                })
+                .listenForWhisper('typing', (e) => {
+                    if (e.name != '') {
+                        this.typing = 'typing...'
+                    } else {
+                        this.typing = ''
+                    }
+
                 });
         },
         methods: {
@@ -85,7 +83,13 @@
                     .catch(function (error) {
                         console.log(error);
                     });
-            }
+            },
+            isTyping() {
+                Echo.private('chat')
+                    .whisper('typing', {
+                        name: this.newMessage
+                    });
+            },
         },
 
     };

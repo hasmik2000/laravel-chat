@@ -57240,32 +57240,27 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         return {
             newMessage: '',
             msg: this.messages,
-            colors: []
+            colors: [],
+            typing: ''
         };
-    },
-
-    computed: {
-        className: function className() {
-            return 'list-group-item-' + this.color;
-        },
-        badgeClass: function badgeClass() {
-            return 'badge-' + this.color;
-        }
     },
     mounted: function mounted() {
         var _this2 = this;
 
-        console.log("To " + this.to);
-        console.log("From " + this.from);
         Echo.private('chat').listen('MessageSentEvent', function (e) {
             if (_this2.to === e.message.from && _this2.from === e.message.to) {
                 _this2.msg.push({
                     message: e.message.message,
                     user: { name: e.user.name }
                 });
+                _this2.typing = '';
             }
-            console.log("To " + e.message.to);
-            console.log("From " + e.message.from);
+        }).listenForWhisper('typing', function (e) {
+            if (e.name != '') {
+                _this2.typing = 'typing...';
+            } else {
+                _this2.typing = '';
+            }
         });
     },
 
@@ -57284,6 +57279,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 _this.newMessage = '';
             }).catch(function (error) {
                 console.log(error);
+            });
+        },
+        isTyping: function isTyping() {
+            Echo.private('chat').whisper('typing', {
+                name: this.newMessage
             });
         }
     }
@@ -57313,33 +57313,33 @@ var render = function() {
         staticClass: "chat"
       },
       _vm._l(_vm.msg, function(message) {
-        return _c(
-          "li",
-          { staticClass: "left clearfix p-3", class: _vm.className },
-          [
-            _c("div", { staticClass: "chat-body clearfix" }, [
-              _c("div", { staticClass: "header" }, [
-                _c("strong", { staticClass: "primary-font" }, [
-                  _vm._v(
-                    "\n                        " +
-                      _vm._s(message.user.name) +
-                      "\n                    "
-                  )
-                ])
-              ]),
-              _vm._v(" "),
-              _c("p", [
+        return _c("li", { staticClass: "left clearfix p-3" }, [
+          _c("div", { staticClass: "chat-body clearfix" }, [
+            _c("div", { staticClass: "header" }, [
+              _c("strong", { staticClass: "primary-font" }, [
                 _vm._v(
-                  "\n                    " +
-                    _vm._s(message.message) +
-                    "\n                "
+                  "\n                        " +
+                    _vm._s(message.user.name) +
+                    "\n                    "
                 )
               ])
+            ]),
+            _vm._v(" "),
+            _c("p", [
+              _vm._v(
+                "\n                    " +
+                  _vm._s(message.message) +
+                  "\n                "
+              )
             ])
-          ]
-        )
+          ])
+        ])
       })
     ),
+    _vm._v(" "),
+    _c("div", { staticClass: "badge badge-pill badge-primary" }, [
+      _vm._v(_vm._s(_vm.typing))
+    ]),
     _vm._v(" "),
     _c("div", { staticClass: "input-group mt-3" }, [
       _c("input", {
@@ -57360,6 +57360,9 @@ var render = function() {
         },
         domProps: { value: _vm.newMessage },
         on: {
+          keydown: function($event) {
+            _vm.isTyping()
+          },
           keyup: function($event) {
             if (
               !("button" in $event) &&
