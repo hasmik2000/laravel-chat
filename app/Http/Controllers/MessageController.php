@@ -41,6 +41,6 @@ class MessageController extends Controller
 
         $user = Auth::user();
 
-        event(new MessageSentEvent($message, $user));
+        broadcast(new MessageSentEvent($message, $user))->toOthers();
     }
 }

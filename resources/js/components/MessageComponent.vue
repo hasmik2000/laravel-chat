@@ -35,6 +35,7 @@
             'from',
             'to',
             'color',
+            'user',
         ],
         data() {
             return {
@@ -52,7 +53,8 @@
             }
         },
         mounted() {
-            console.log(this.to);
+            console.log("To " + this.to);
+            console.log("From " + this.from);
             Echo.private('chat')
                 .listen('MessageSentEvent', (e) => {
                     if ((this.to === e.message.from) && (this.from === e.message.to)) {
@@ -61,7 +63,8 @@
                             user:{name: e.user.name },
                         });
                     }
-                    console.log(e.message.to);
+                    console.log("To " + e.message.to);
+                    console.log("From " + e.message.from);
                 });
         },
         methods: {
@@ -73,10 +76,11 @@
                     to: this.to,
                 })
                     .then(function (response) {
-//                        _this.messages.push(response.data);
+                        _this.msg.push({
+                            message: _this.newMessage,
+                            user: {name: _this.user.name}
+                        });
                         _this.newMessage = '';
-//                        _this.color.push('success');
-//                        console.log(response);
                     })
                     .catch(function (error) {
                         console.log(error);

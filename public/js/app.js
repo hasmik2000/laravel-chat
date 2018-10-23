@@ -57235,7 +57235,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-    props: ['messages', 'from', 'to', 'color'],
+    props: ['messages', 'from', 'to', 'color', 'user'],
     data: function data() {
         return {
             newMessage: '',
@@ -57255,7 +57255,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     mounted: function mounted() {
         var _this2 = this;
 
-        console.log(this.to);
+        console.log("To " + this.to);
+        console.log("From " + this.from);
         Echo.private('chat').listen('MessageSentEvent', function (e) {
             if (_this2.to === e.message.from && _this2.from === e.message.to) {
                 _this2.msg.push({
@@ -57263,7 +57264,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                     user: { name: e.user.name }
                 });
             }
-            console.log(e.message.to);
+            console.log("To " + e.message.to);
+            console.log("From " + e.message.from);
         });
     },
 
@@ -57275,10 +57277,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 from: this.from,
                 to: this.to
             }).then(function (response) {
-                //                        _this.messages.push(response.data);
+                _this.msg.push({
+                    message: _this.newMessage,
+                    user: { name: _this.user.name }
+                });
                 _this.newMessage = '';
-                //                        _this.color.push('success');
-                //                        console.log(response);
             }).catch(function (error) {
                 console.log(error);
             });

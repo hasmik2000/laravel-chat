@@ -13,7 +13,8 @@
                                     :messages="{{ json_encode($messages) }}"
                                     :from="{{ Auth::user()->id }}"
                                     :to="{{ $id }}"
-                                    color=color[index]">
+                                    color=color[index]"
+                                    :user="{{ Auth::user() }}">
                             </message>
                         </div>
                     </div>
