@@ -57232,6 +57232,25 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -57240,7 +57259,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         return {
             newMessage: '',
             msg: this.messages,
-            colors: [],
             typing: ''
         };
     },
@@ -57274,7 +57292,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             }).then(function (response) {
                 _this.msg.push({
                     message: _this.newMessage,
-                    user: { name: _this.user.name }
+                    user: { name: _this.user.name },
+                    from: _this.from,
+                    to: _this.to
                 });
                 _this.newMessage = '';
             }).catch(function (error) {
@@ -57310,28 +57330,38 @@ var render = function() {
             expression: "{always: false}"
           }
         ],
-        staticClass: "chat"
+        staticClass: "chat border-top bg-light"
       },
       _vm._l(_vm.msg, function(message) {
         return _c("li", { staticClass: "left clearfix p-3" }, [
           _c("div", { staticClass: "chat-body clearfix" }, [
-            _c("div", { staticClass: "header" }, [
-              _c("strong", { staticClass: "primary-font" }, [
-                _vm._v(
-                  "\n                        " +
-                    _vm._s(message.user.name) +
-                    "\n                    "
-                )
-              ])
-            ]),
-            _vm._v(" "),
-            _c("p", [
-              _vm._v(
-                "\n                    " +
-                  _vm._s(message.message) +
-                  "\n                "
-              )
-            ])
+            message.from == _vm.from && message.to == _vm.to
+              ? _c("div", { staticClass: "row" }, [
+                  _c(
+                    "div",
+                    { staticClass: "col-3 offset-9 bg-primary p-2 sent" },
+                    [
+                      _c("p", [
+                        _vm._v(
+                          "\n                            " +
+                            _vm._s(message.message) +
+                            "\n                        "
+                        )
+                      ])
+                    ]
+                  )
+                ])
+              : _c("div", { staticClass: "row" }, [
+                  _c("div", { staticClass: "col-3 received p-2" }, [
+                    _c("p", [
+                      _vm._v(
+                        "\n                            " +
+                          _vm._s(message.message) +
+                          "\n                        "
+                      )
+                    ])
+                  ])
+                ])
           ])
         ])
       })

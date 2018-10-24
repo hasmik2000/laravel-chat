@@ -1,16 +1,35 @@
 <template>
     <div>
-        <ul class="chat" v-chat-scroll="{always: false}">
+        <ul class="chat border-top bg-light" v-chat-scroll="{always: false}">
             <li class="left clearfix p-3" v-for="message in msg">
                 <div class="chat-body clearfix">
-                    <div class="header">
-                        <strong class="primary-font">
-                            {{ message.user.name }}
-                        </strong>
+                    <div class="row" v-if="(message.from == from) && (message.to == to)">
+                        <div class="col-3 offset-9 bg-primary p-2 sent">
+                            <!--<div class="header">-->
+                                <!--<strong class="primary-font">-->
+                                    <!--{{ message.user.name }}-->
+                                <!--</strong>-->
+                            <!--</div>-->
+                            <p>
+                                {{ message.message }}
+                            </p>
+                            <!--<span class="badge badge-pill badge-info">{{ message.user.name }}</span>-->
+                        </div>
                     </div>
-                    <p>
-                        {{ message.message }}
-                    </p>
+                    <div class="row" v-else="(message.from == to) && (message.to == from)">
+                        <div class="col-3 received p-2">
+                            <!--<div class="header">-->
+                                <!--<strong class="primary-font">-->
+                                    <!--{{ message.user.name }}-->
+                                <!--</strong>-->
+                            <!--</div>-->
+                            <p>
+                                {{ message.message }}
+                            </p>
+                            <!--<span class="badge badge-pill badge-info">{{ message.user.name }}</span>-->
+                        </div>
+                    </div>
+
                 </div>
             </li>
         </ul>
@@ -41,7 +60,6 @@
             return {
                 newMessage: '',
                 msg: this.messages,
-                colors: [],
                 typing: ''
             }
         },
@@ -76,7 +94,9 @@
                     .then(function (response) {
                         _this.msg.push({
                             message: _this.newMessage,
-                            user: {name: _this.user.name}
+                            user: {name: _this.user.name},
+                            from: _this.from,
+                            to: _this.to
                         });
                         _this.newMessage = '';
                     })
