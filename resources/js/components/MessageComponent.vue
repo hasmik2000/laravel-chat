@@ -5,39 +5,28 @@
                 <div class="chat-body clearfix">
                     <div class="row" v-if="(message.from == from) && (message.to == to)">
                         <div class="col-3 offset-9 bg-primary p-2 sent">
-                            <!--<div class="header">-->
-                                <!--<strong class="primary-font">-->
-                                    <!--{{ message.user.name }}-->
-                                <!--</strong>-->
-                            <!--</div>-->
                             <p>
                                 {{ message.message }}
                             </p>
-                            <!--<span class="badge badge-pill badge-info">{{ message.user.name }}</span>-->
                         </div>
                     </div>
                     <div class="row" v-else="(message.from == to) && (message.to == from)">
                         <div class="col-3 received p-2">
-                            <!--<div class="header">-->
-                                <!--<strong class="primary-font">-->
-                                    <!--{{ message.user.name }}-->
-                                <!--</strong>-->
-                            <!--</div>-->
                             <p>
                                 {{ message.message }}
                             </p>
-                            <!--<span class="badge badge-pill badge-info">{{ message.user.name }}</span>-->
                         </div>
                     </div>
 
                 </div>
             </li>
         </ul>
-        <div class="badge badge-pill badge-primary">{{ typing }}</div>
+        <div class="badge badge-pill badge-primary" v-show="typing">typing...</div>
+        <div class="badge badge-pill badge-danger" v-show="deleting">deleting...</div>
         <div class="input-group mt-3">
-            <input id="btn-input" type="text" name="message" class="form-control input-sm" placeholder="Type your message here..." v-model="newMessage" @keydown="isTyping()" @keyup.enter="sendMessage">
+            <input id="btn-input" type="text" name="message" class="form-control input-sm" placeholder="Type your message here..." v-model="newMessage" @keydown="isTyping()" @keyup.delete="isDeleting()" @keyup.enter="sendMessage">
             <span class="input-group-btn">
-                <button class="btn btn-primary btn-sm" id="btn-chat" @click="sendMessage">
+                <button class="btn btn-primary btn-sm form-control" id="btn-chat" @click="sendMessage">
                     Send
                 </button>
             </span>
@@ -60,28 +49,40 @@
             return {
                 newMessage: '',
                 msg: this.messages,
-                typing: ''
+                typing: false,
+                deleting: false
             }
         },
         mounted() {
-            Echo.private('chat')
+            let _this = this;
+            let chat1 = _this.from;
+            let chat2 = _this.to;
+            if (_this.from > _this.to)
+            {
+                chat1 = _this.to;
+                chat2 = _this.from;
+            }
+            Echo.private(`chat.${chat1}_${chat2}`)
                 .listen('MessageSentEvent', (e) => {
-                    if ((this.to === e.message.from) && (this.from === e.message.to)) {
                         this.msg.push({
                             message: e.message.message,
-                            user:{name: e.user.name },
                         });
-                        this.typing = ''
-                    }
                 })
                 .listenForWhisper('typing', (e) => {
-                    if (e.name != '') {
-                        this.typing = 'typing...'
-                    } else {
-                        this.typing = ''
-                    }
-
-                });
+                    console.log(e.keyCodes);
+//                    if (e.keyCodes)
+                    this.typing = e.typing;
+                    setTimeout(function() {
+                        _this.typing = false;
+                    }, 5000);
+                })
+                .listenForWhisper('deleting', (e) => {
+                    this.deleting = e.deleting;
+                    console.log(e.deleting);
+                    setTimeout(function() {
+                        _this.deleting = false;
+                    }, 5000);
+                })
         },
         methods: {
             sendMessage() {
@@ -105,11 +106,42 @@
                     });
             },
             isTyping() {
-                Echo.private('chat')
-                    .whisper('typing', {
-                        name: this.newMessage
-                    });
+                let _this = this;
+                let chat1 = _this.from;
+                let chat2 = _this.to;
+                if (_this.from > _this.to)
+                {
+                    chat1 = _this.to;
+                    chat2 = _this.from;
+                }
+                let channel = Echo.private(`chat.${chat1}_${chat2}`);
+                    setTimeout(function() {
+                        channel.whisper('typing', {
+                            name: this.newMessage,
+                            user: this.user,
+                            typing: true
+                        });
+                    }, 300);
+
             },
+            isDeleting() {
+                let _this = this;
+                let chat1 = _this.from;
+                let chat2 = _this.to;
+                if (_this.from > _this.to)
+                {
+                    chat1 = _this.to;
+                    chat2 = _this.from;
+                }
+                let channel = Echo.private(`chat.${chat1}_${chat2}`);
+                setTimeout(function() {
+                    channel.whisper('deleting', {
+                        name: this.newMessage,
+                        user: this.user,
+                        deleting: true
+                    });
+                }, 300);
+            }
         },
 
     };

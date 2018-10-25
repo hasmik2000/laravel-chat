@@ -57240,17 +57240,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -57259,26 +57248,37 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         return {
             newMessage: '',
             msg: this.messages,
-            typing: ''
+            typing: false,
+            deleting: false
         };
     },
     mounted: function mounted() {
         var _this2 = this;
 
-        Echo.private('chat').listen('MessageSentEvent', function (e) {
-            if (_this2.to === e.message.from && _this2.from === e.message.to) {
-                _this2.msg.push({
-                    message: e.message.message,
-                    user: { name: e.user.name }
-                });
-                _this2.typing = '';
-            }
+        var _this = this;
+        var chat1 = _this.from;
+        var chat2 = _this.to;
+        if (_this.from > _this.to) {
+            chat1 = _this.to;
+            chat2 = _this.from;
+        }
+        Echo.private('chat.' + chat1 + '_' + chat2).listen('MessageSentEvent', function (e) {
+            _this2.msg.push({
+                message: e.message.message
+            });
         }).listenForWhisper('typing', function (e) {
-            if (e.name != '') {
-                _this2.typing = 'typing...';
-            } else {
-                _this2.typing = '';
-            }
+            console.log(e.keyCodes);
+            //                    if (e.keyCodes)
+            _this2.typing = e.typing;
+            setTimeout(function () {
+                _this.typing = false;
+            }, 5000);
+        }).listenForWhisper('deleting', function (e) {
+            _this2.deleting = e.deleting;
+            console.log(e.deleting);
+            setTimeout(function () {
+                _this.deleting = false;
+            }, 5000);
         });
     },
 
@@ -57302,9 +57302,38 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             });
         },
         isTyping: function isTyping() {
-            Echo.private('chat').whisper('typing', {
-                name: this.newMessage
-            });
+            var _this = this;
+            var chat1 = _this.from;
+            var chat2 = _this.to;
+            if (_this.from > _this.to) {
+                chat1 = _this.to;
+                chat2 = _this.from;
+            }
+            var channel = Echo.private('chat.' + chat1 + '_' + chat2);
+            setTimeout(function () {
+                channel.whisper('typing', {
+                    name: this.newMessage,
+                    user: this.user,
+                    typing: true
+                });
+            }, 300);
+        },
+        isDeleting: function isDeleting() {
+            var _this = this;
+            var chat1 = _this.from;
+            var chat2 = _this.to;
+            if (_this.from > _this.to) {
+                chat1 = _this.to;
+                chat2 = _this.from;
+            }
+            var channel = Echo.private('chat.' + chat1 + '_' + chat2);
+            setTimeout(function () {
+                channel.whisper('deleting', {
+                    name: this.newMessage,
+                    user: this.user,
+                    deleting: true
+                });
+            }, 300);
         }
     }
 
@@ -57367,9 +57396,37 @@ var render = function() {
       })
     ),
     _vm._v(" "),
-    _c("div", { staticClass: "badge badge-pill badge-primary" }, [
-      _vm._v(_vm._s(_vm.typing))
-    ]),
+    _c(
+      "div",
+      {
+        directives: [
+          {
+            name: "show",
+            rawName: "v-show",
+            value: _vm.typing,
+            expression: "typing"
+          }
+        ],
+        staticClass: "badge badge-pill badge-primary"
+      },
+      [_vm._v("typing...")]
+    ),
+    _vm._v(" "),
+    _c(
+      "div",
+      {
+        directives: [
+          {
+            name: "show",
+            rawName: "v-show",
+            value: _vm.deleting,
+            expression: "deleting"
+          }
+        ],
+        staticClass: "badge badge-pill badge-danger"
+      },
+      [_vm._v("deleting...")]
+    ),
     _vm._v(" "),
     _c("div", { staticClass: "input-group mt-3" }, [
       _c("input", {
@@ -57393,15 +57450,29 @@ var render = function() {
           keydown: function($event) {
             _vm.isTyping()
           },
-          keyup: function($event) {
-            if (
-              !("button" in $event) &&
-              _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
-            ) {
-              return null
+          keyup: [
+            function($event) {
+              if (
+                !("button" in $event) &&
+                _vm._k($event.keyCode, "delete", [8, 46], $event.key, [
+                  "Backspace",
+                  "Delete"
+                ])
+              ) {
+                return null
+              }
+              _vm.isDeleting()
+            },
+            function($event) {
+              if (
+                !("button" in $event) &&
+                _vm._k($event.keyCode, "enter", 13, $event.key, "Enter")
+              ) {
+                return null
+              }
+              return _vm.sendMessage($event)
             }
-            return _vm.sendMessage($event)
-          },
+          ],
           input: function($event) {
             if ($event.target.composing) {
               return
@@ -57415,7 +57486,7 @@ var render = function() {
         _c(
           "button",
           {
-            staticClass: "btn btn-primary btn-sm",
+            staticClass: "btn btn-primary btn-sm form-control",
             attrs: { id: "btn-chat" },
             on: { click: _vm.sendMessage }
           },

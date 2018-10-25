@@ -18,7 +18,7 @@ class MessageController extends Controller
     public function fetch($id)
     {
         $from = Auth::user()->id;
-//        $user = Auth::user();
+        $user = Auth::user();
 
         $messages = Message::with('user')->where(function ($query) use ($from, $id) {
                 $query->where('from', '=', $from)
@@ -28,8 +28,6 @@ class MessageController extends Controller
                 $query2->where('to', '=', $from)
                     ->where('from', '=', $id);
             })->get();
-//        $user = $messages->user->name;
-//        return response()->json(['messages' => $messages]);
         return view('chat', compact('messages', 'id', 'user'));
     }
 

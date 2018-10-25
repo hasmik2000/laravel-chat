@@ -35,6 +35,14 @@ class MessageSentEvent implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('chat');
+        $chat1 = $this->message->from;
+        $chat2 = $this->message->to;
+
+        if  ($this->message->from > $this->message->to) {
+            $chat1 = $this->message->to;
+            $chat2 = $this->message->from;
+        }
+
+        return new PrivateChannel('chat.'.$chat1.'_'.$chat2);
     }
 }

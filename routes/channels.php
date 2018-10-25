@@ -11,10 +11,14 @@
 |
 */
 
+use App\Message;
+use Illuminate\Support\Facades\Auth;
+
 Broadcast::channel('App.User.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });
 
-Broadcast::channel('chat', function () {
-    return true;
+Broadcast::channel('chat.{chat1}_{chat2}', function ($user, $fromUserId) {
+//    return $user->id === Message::find($fromUserId)->from;
+        return Auth::check();
 });
