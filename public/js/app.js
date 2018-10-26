@@ -57267,16 +57267,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 message: e.message.message
             });
         }).listenForWhisper('typing', function (e) {
-            console.log(e.keyCodes);
-            //                    if (e.keyCodes)
             _this2.typing = e.typing;
             setTimeout(function () {
                 _this.typing = false;
             }, 5000);
         }).listenForWhisper('deleting', function (e) {
+            _this2.typing = false;
             _this2.deleting = e.deleting;
-            console.log(e.deleting);
             setTimeout(function () {
+                _this.typing = false;
                 _this.deleting = false;
             }, 5000);
         });
@@ -57301,7 +57300,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 console.log(error);
             });
         },
-        isTyping: function isTyping() {
+
+        isTyping: function isTyping(event) {
             var _this = this;
             var chat1 = _this.from;
             var chat2 = _this.to;
@@ -57309,14 +57309,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 chat1 = _this.to;
                 chat2 = _this.from;
             }
-            var channel = Echo.private('chat.' + chat1 + '_' + chat2);
-            setTimeout(function () {
-                channel.whisper('typing', {
-                    name: this.newMessage,
-                    user: this.user,
-                    typing: true
-                });
-            }, 300);
+            if (event.keyCode != 8) {
+                var channel = Echo.private('chat.' + chat1 + '_' + chat2);
+                setTimeout(function () {
+                    channel.whisper('typing', {
+                        name: this.newMessage,
+                        user: this.user,
+                        typing: true
+                    });
+                }, 300);
+            }
         },
         isDeleting: function isDeleting() {
             var _this = this;
@@ -57447,9 +57449,7 @@ var render = function() {
         },
         domProps: { value: _vm.newMessage },
         on: {
-          keydown: function($event) {
-            _vm.isTyping()
-          },
+          keydown: _vm.isTyping,
           keyup: [
             function($event) {
               if (

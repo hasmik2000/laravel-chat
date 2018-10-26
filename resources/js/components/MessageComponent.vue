@@ -24,7 +24,7 @@
         <div class="badge badge-pill badge-primary" v-show="typing">typing...</div>
         <div class="badge badge-pill badge-danger" v-show="deleting">deleting...</div>
         <div class="input-group mt-3">
-            <input id="btn-input" type="text" name="message" class="form-control input-sm" placeholder="Type your message here..." v-model="newMessage" @keydown="isTyping()" @keyup.delete="isDeleting()" @keyup.enter="sendMessage">
+            <input id="btn-input" type="text" name="message" class="form-control input-sm" placeholder="Type your message here..." v-model="newMessage" @keydown="isTyping" @keyup.delete="isDeleting()" @keyup.enter="sendMessage">
             <span class="input-group-btn">
                 <button class="btn btn-primary btn-sm form-control" id="btn-chat" @click="sendMessage">
                     Send
@@ -69,17 +69,16 @@
                         });
                 })
                 .listenForWhisper('typing', (e) => {
-                    console.log(e.keyCodes);
-//                    if (e.keyCodes)
                     this.typing = e.typing;
                     setTimeout(function() {
                         _this.typing = false;
                     }, 5000);
                 })
                 .listenForWhisper('deleting', (e) => {
+                    this.typing = false;
                     this.deleting = e.deleting;
-                    console.log(e.deleting);
                     setTimeout(function() {
+                        _this.typing = false;
                         _this.deleting = false;
                     }, 5000);
                 })
@@ -105,7 +104,7 @@
                         console.log(error);
                     });
             },
-            isTyping() {
+            isTyping: function (event) {
                 let _this = this;
                 let chat1 = _this.from;
                 let chat2 = _this.to;
@@ -114,7 +113,8 @@
                     chat1 = _this.to;
                     chat2 = _this.from;
                 }
-                let channel = Echo.private(`chat.${chat1}_${chat2}`);
+                if (event.keyCode != 8) {
+                    let channel = Echo.private(`chat.${chat1}_${chat2}`);
                     setTimeout(function() {
                         channel.whisper('typing', {
                             name: this.newMessage,
@@ -122,7 +122,7 @@
                             typing: true
                         });
                     }, 300);
-
+                }
             },
             isDeleting() {
                 let _this = this;
