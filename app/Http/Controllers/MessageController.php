@@ -10,15 +10,15 @@ use Illuminate\Support\Facades\DB;
 
 class MessageController extends Controller
 {
-    public function index()
-    {
-        return view('chat');
-    }
-
     public function fetch($id)
     {
         $from = Auth::user()->id;
         $user = Auth::user();
+
+        Message::with('user')->where(function ($query) use ($from, $id) {
+            $query->where('to', '=', $from)
+                ->where('from', '=', $id);
+        })->update(['seen' => 1]);
 
         $messages = Message::with('user')->where(function ($query) use ($from, $id) {
                 $query->where('from', '=', $from)
@@ -28,6 +28,7 @@ class MessageController extends Controller
                 $query2->where('to', '=', $from)
                     ->where('from', '=', $id);
             })->get();
+
         return view('chat', compact('messages', 'id', 'user'));
     }
 

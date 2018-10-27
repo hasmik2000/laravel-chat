@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container">
+    <div class="container collapse" id="collapseUsers">
         <div class="card">
             <div class="card-header">
                 All Users
@@ -17,6 +17,12 @@
                                 <div class="col-6 m-3">
                                     {{ $user->name }}
                                 </div>
+                                {{--@foreach($user->messages as $message)--}}
+                                    <div class="col-auto offset-2">
+                                        <span class="badge badge-pill badge-danger"></span>
+                                    </div>
+                                {{--@endforeach--}}
+
                             </div>
                         </div>
                     </a>

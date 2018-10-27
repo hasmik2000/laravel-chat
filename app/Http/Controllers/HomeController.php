@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Message;
 use Illuminate\Http\Request;
 use App\User;
 use Illuminate\Support\Facades\Auth;
@@ -25,8 +26,26 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $users = User::where('id', '!=', Auth::id())->get();
+        $users = User::with('messages')->where('id', '!=', Auth::id())->get();
+//        $unread = Message::with('user')->where(function ($query) use($from){
+//            $query->where('to', '=', Auth::id())
+//                ->where('from', '=', $from);
+//        })->orWhere(function ($query2){
+//            $query2->where('seen', '=', 0);
+//        })->get();
+        $unread = User::whereHas('messages', function ($query) {
+           $query->where('to', '=', Auth::id())
+           ->where('seen', '=', '0');
+        })->count();
 
-        return view('home', compact('users'));
+//        $user = User::with('unread_messages')->get();
+
+        $user = User::with('unread_messages')->whereHas('messages', function ($query) {
+            $query->where('to', '=', Auth::id())
+                ->where('seen', '=', '0');
+        })->get();
+//        dd($unread);
+        dd($user);
+        return view('home', compact('users', 'unread'));
     }
 }
