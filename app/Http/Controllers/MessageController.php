@@ -6,6 +6,7 @@ use App\Message;
 use Illuminate\Http\Request;
 use App\Events\MessageSentEvent;
 use Illuminate\Support\Facades\Auth;
+use App\User;
 use Illuminate\Support\Facades\DB;
 
 class MessageController extends Controller
@@ -29,7 +30,12 @@ class MessageController extends Controller
                     ->where('from', '=', $id);
             })->get();
 
-        return view('chat', compact('messages', 'id', 'user'));
+        $unread = User::whereHas('messages', function ($query) {
+            $query->where('to', '=', auth()->id())
+                ->where('seen', '=', 0);
+        })->count();
+
+        return view('chat', compact('messages', 'id', 'user', 'unread'));
     }
 
     public function send(Request $request)

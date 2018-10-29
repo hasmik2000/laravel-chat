@@ -25,6 +25,8 @@
     <!--Style css-->
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
 </head>
 <body>
 <div id="app">
@@ -55,11 +57,14 @@
                         @endif
                     </li>
                     @else
-                        <li class="nav-item">
-                            <a class="btn btn-danger" data-toggle="collapse" href="#collapseUsers" role="button" aria-expanded="false" aria-controls="collapseUsers">
-                                {{ $unread }}
-                            </a>
-                        </li>
+                            <li class="nav-item">
+                                <a class="btn" data-toggle="collapse" href="#collapseUsers" role="button" aria-expanded="false" aria-controls="collapseUsers">
+                                    <i class="fa fa-envelope"></i>
+                                    @if($unread > 0)
+                                        <span class="badge badge-pill badge-danger">{{ $unread }}</span>
+                                    @endif
+                                </a>
+                            </li>
                         <li class="nav-item dropdown">
                             <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                 {{ Auth::user()->name }} <span class="caret"></span>

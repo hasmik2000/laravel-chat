@@ -17,12 +17,11 @@
                                 <div class="col-6 m-3">
                                     {{ $user->name }}
                                 </div>
-                                {{--@foreach($user->messages as $message)--}}
+                                @if($user->unread_messages->count() > 0)
                                     <div class="col-auto offset-2">
-                                        <span class="badge badge-pill badge-danger"></span>
+                                        <span class="badge badge-pill badge-danger">{{ $user->unread_messages->count() }}</span>
                                     </div>
-                                {{--@endforeach--}}
-
+                                @endif
                             </div>
                         </div>
                     </a>

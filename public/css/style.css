@@ -2,6 +2,13 @@
     margin: 0;
     padding: 0;
 }
+.navbar-nav .nav-item i {
+    font-size: 25px;
+}
+.nav-item .btn .badge{
+    top: -14px !important;
+    left: -14px !important;
+}
 .card-body a {
     text-decoration: none;
 }
