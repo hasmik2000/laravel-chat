@@ -67,6 +67,16 @@
                         this.msg.push({
                             message: e.message.message,
                         });
+                        axios.post('/seen/' + e.message.id, {
+                            seen: '1',
+                        })
+                        .then(function (response) {
+                            console.log(response);
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });
+                        console.log(e.message.id);
                 })
                 .listenForWhisper('typing', (e) => {
                     this.typing = e.typing;

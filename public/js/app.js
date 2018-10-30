@@ -57266,6 +57266,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             _this2.msg.push({
                 message: e.message.message
             });
+            axios.post('/seen/' + e.message.id, {
+                seen: '1'
+            }).then(function (response) {
+                console.log(response);
+            }).catch(function (error) {
+                console.log(error);
+            });
+            console.log(e.message.id);
         }).listenForWhisper('typing', function (e) {
             _this2.typing = e.typing;
             setTimeout(function () {

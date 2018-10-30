@@ -48,4 +48,9 @@ class MessageController extends Controller
 
         broadcast(new MessageSentEvent($message, $user))->toOthers();
     }
+
+    public function seen($id)
+    {
+        Message::where('id', '=', $id)->update(['seen' => 1]);
+    }
 }

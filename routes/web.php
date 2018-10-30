@@ -20,4 +20,5 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::middleware('auth')->group(function () {
     Route::get('/messages/user/{id}', 'MessageController@fetch');
     Route::post('send', 'MessageController@send');
+    Route::post('/seen/{id}', 'MessageController@seen');
 });

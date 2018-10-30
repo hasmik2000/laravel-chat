@@ -18,7 +18,6 @@ Broadcast::channel('App.User.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });
 
-Broadcast::channel('chat.{chat1}_{chat2}', function ($user, $fromUserId) {
-//    return $user->id === Message::find($fromUserId)->from;
+Broadcast::channel('chat.{chat1}_{chat2}', function () {
         return Auth::check();
 });
